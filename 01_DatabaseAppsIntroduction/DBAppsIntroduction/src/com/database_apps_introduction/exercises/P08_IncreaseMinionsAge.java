@@ -8,26 +8,30 @@ import java.util.Scanner;
 public class P08_IncreaseMinionsAge {
 
 
+    private static final String SELECT_MINIONS_BY_ID_IN = "SELECT * FROM minions WHERE id IN ";
+    private static final String SELECT_ALL_MINIONS = "SELECT * FROM minions";
+
     public static void main(String[] args) {
-        Connection conn = null;
 
-        try{
-            conn = ConnectionUtil.getConnection("minionsdb");
+        Scanner sc = new Scanner(System.in);
+        String[] inputTokens = sc.nextLine().split("\\s");
 
-            Scanner sc = new Scanner(System.in);
-            String[] inputTokens = sc.nextLine().split("\\s");
-            
-            StringBuilder ids = new StringBuilder();
-            ids.append("(");
-            for (String inputToken : inputTokens) {
-                ids.append(inputToken + ", ");
-            }
-            ids.delete(ids.lastIndexOf(", "),ids.length());
-            ids.append(")");
-            System.out.println(ids.toString());
+        StringBuilder ids = new StringBuilder();
+        ids.append("(");
+        for (String inputToken : inputTokens) {
+            ids.append(inputToken).append(", ");
+        }
+        ids.delete(ids.lastIndexOf(", "),ids.length());
+        ids.append(")");
+        System.out.println(ids.toString());
 
-            String minionsSQL = "SELECT * FROM minions WHERE id IN "+ids.toString();
-            Statement minionsStatement = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        try(
+                Connection conn  = ConnectionUtil.getConnection("minionsdb");
+                Statement minionsStatement = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+                Statement allMinionsStatement = conn.createStatement();
+                ){
+
+            String minionsSQL = SELECT_MINIONS_BY_ID_IN + ids.toString();
 
             ResultSet minions = minionsStatement.executeQuery(minionsSQL);
 
@@ -39,24 +43,16 @@ public class P08_IncreaseMinionsAge {
                 minions.updateRow();
             }
 
-            String allMinionsSQL = "SELECT * FROM minions";
-            Statement allMinionsStatement = conn.createStatement();
-
-            ResultSet allMinions = allMinionsStatement.executeQuery(allMinionsSQL);
+            ResultSet allMinions = allMinionsStatement.executeQuery(SELECT_ALL_MINIONS);
 
             while(allMinions.next()){
-                System.out.println(allMinions.getInt("id")+" "+allMinions.getString("name")+" "+allMinions.getInt("age"));
+                System.out.println(allMinions.getInt("id") + " " + allMinions.getString("name") + " "
+                        + allMinions.getInt("age"));
             }
 
 
-        }catch(SQLException se){
+        }catch(SQLException | ClassNotFoundException se){
             se.printStackTrace();
-        }finally{
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 

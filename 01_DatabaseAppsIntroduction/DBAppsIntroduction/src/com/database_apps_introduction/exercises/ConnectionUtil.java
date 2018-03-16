@@ -7,41 +7,36 @@ import java.sql.SQLException;
 class ConnectionUtil {
 
     // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost/";
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DB_URL = "jdbc:mysql://localhost/";
 
     //  Database credentials
-    static final String USER = "root";
-    static final String PASS = "";
-    public static final String DRIVER_NAME = "com.mysql.jdbc.Driver";
+    private static final String USER = "root";
+    private static final String PASS = "";
 
-    static Connection getConnection(){
+
+
+
+    static Connection getConnection() throws ClassNotFoundException, SQLException {
        return getConnection(null);
     }
 
+    static Connection getConnection(String dbName) throws ClassNotFoundException, SQLException {
 
-    static Connection getConnection(String dbName){
-        try {
-            Class.forName(DRIVER_NAME);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Class.forName(JDBC_DRIVER);
 
         //Open a connection
         System.out.println("Connecting to database...");
-        try {
-            if(dbName != null){
-                return DriverManager.getConnection(ConnectionUtil.DB_URL + dbName, ConnectionUtil.USER,
-                        ConnectionUtil.PASS);
-            }else {
-                return DriverManager.getConnection(ConnectionUtil.DB_URL , ConnectionUtil.USER,
-                        ConnectionUtil.PASS);
-            }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if(dbName != null){
+            return DriverManager.getConnection(ConnectionUtil.DB_URL + dbName, ConnectionUtil.USER,
+                        ConnectionUtil.PASS);
+        }else {
+            return DriverManager.getConnection(ConnectionUtil.DB_URL , ConnectionUtil.USER,
+                        ConnectionUtil.PASS);
         }
-        return null;
+
+
     }
 
     private ConnectionUtil() {

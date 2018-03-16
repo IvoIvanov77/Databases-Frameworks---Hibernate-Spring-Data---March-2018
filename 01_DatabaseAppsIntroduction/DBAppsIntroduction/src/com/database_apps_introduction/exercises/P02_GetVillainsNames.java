@@ -26,7 +26,7 @@ public class P02_GetVillainsNames {
             rs.close();
             stmt.close();
             conn.close();
-        }catch(SQLException se){
+        }catch(SQLException | ClassNotFoundException se){
             //Handle errors for JDBC
             se.printStackTrace();
         }

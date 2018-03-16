@@ -15,8 +15,6 @@ public class P03_GetMinionNames {
 
     public static void main(String[] args) {
 
-
-
         try(
                 Connection conn = ConnectionUtil.getConnection("minionsdb");
                 PreparedStatement villainStatement = conn.prepareStatement(SELECT_VILLIAN_NAME_BY_ID);

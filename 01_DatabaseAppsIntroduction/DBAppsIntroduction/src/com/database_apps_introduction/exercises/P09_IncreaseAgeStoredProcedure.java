@@ -23,14 +23,13 @@ public class P09_IncreaseAgeStoredProcedure {
             getOlderStoredProcedure.setInt(1, id);
             getOlderStoredProcedure.execute();
 
-            String minionSQL = SELECT_MINION_BY_ID;
-            PreparedStatement minionsStatement = conn.prepareStatement(minionSQL);
+            PreparedStatement minionsStatement = conn.prepareStatement(SELECT_MINION_BY_ID);
             minionsStatement.setInt(1, id);
             ResultSet minions = minionsStatement.executeQuery();
             minions.first();
             System.out.println(minions.getString("name")+" "+minions.getInt("age"));
 
-        }catch(SQLException se) {
+        }catch(SQLException | ClassNotFoundException se) {
             se.printStackTrace();
         }
     }

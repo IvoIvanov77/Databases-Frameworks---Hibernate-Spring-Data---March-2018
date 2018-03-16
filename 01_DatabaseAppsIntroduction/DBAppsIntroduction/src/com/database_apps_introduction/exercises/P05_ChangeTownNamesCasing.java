@@ -10,18 +10,17 @@ public class P05_ChangeTownNamesCasing {
     public static final String SELECT_TOWNS_BY_COUNTRY = "SELECT id, name FROM towns WHERE country = ?";
 
     public static void main(String[] args) {
-        Connection conn = null;
 
-        try{
+        Scanner sc = new Scanner(System.in);
 
-            conn = ConnectionUtil.getConnection("minionsdb");
+        String countryName = sc.nextLine();
 
-            Scanner sc = new Scanner(System.in);
+        try(
+                Connection conn = ConnectionUtil.getConnection("minionsdb");
+                PreparedStatement townsFromCountryStatement = conn
+                        .prepareStatement(SELECT_TOWNS_BY_COUNTRY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                ){
 
-            String countryName = sc.nextLine();
-
-            PreparedStatement townsFromCountryStatement = conn
-                    .prepareStatement(SELECT_TOWNS_BY_COUNTRY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             townsFromCountryStatement.setString(1, countryName);
             ResultSet towns = townsFromCountryStatement.executeQuery();
             if(!towns.isBeforeFirst()){
@@ -43,15 +42,9 @@ public class P05_ChangeTownNamesCasing {
             }
             System.out.println(townsUppercase.size()+" town names were affected.");
             System.out.println(townsUppercase);
-        }catch(SQLException se){
+        }catch(SQLException | ClassNotFoundException se){
             se.printStackTrace();
 
-        }finally{
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

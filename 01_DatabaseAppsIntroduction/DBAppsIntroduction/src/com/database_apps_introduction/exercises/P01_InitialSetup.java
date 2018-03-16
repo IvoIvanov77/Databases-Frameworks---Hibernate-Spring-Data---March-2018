@@ -5,53 +5,76 @@ import java.sql.*;
 public class P01_InitialSetup {
 
 
-    public static void main(String[] args) {
-        Connection conn = ConnectionUtil.getConnection();
-        Statement stmt = null;
-        try{
+    public static void main(String[] args) throws SQLException {
+
+       createDatabase("minionsdb");
+       seedDatabase("minionsdb");
+    }
+
+    private static void createDatabase(String dbName) throws SQLException {
+
+        try (
+                Connection conn = ConnectionUtil.getConnection();
+                Statement stmt = conn.createStatement();
+        ) {
+            System.out.println("Creating statement...");
+
+            String sql;
+            sql = String.format("DROP DATABASE IF EXISTS %s", dbName);
+            stmt.execute(sql);
+            sql = String.format("CREATE DATABASE %s", dbName);
+            stmt.execute(sql);
+            stmt.close();
+            conn.close();
+            System.out.println("Database created successfully");
+        } catch (SQLException  | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void seedDatabase(String dbName){
+
+        try(
+                Connection conn = ConnectionUtil.getConnection(dbName);
+                Statement stmt = conn.createStatement();
+        ){
             //Execute a query`
             System.out.println("Creating statement...");
-            stmt = conn.createStatement();
+
             String sql;
-            sql = "DROP DATABASE IF EXISTS minionsdb";
-            stmt.execute(sql);
-            sql = "CREATE DATABASE minionsdb";
-            stmt.execute(sql);
-            conn = DriverManager.getConnection(ConnectionUtil.DB_URL + "minionsdb",
-                    ConnectionUtil.USER, ConnectionUtil.PASS);
-            stmt = conn.createStatement();
+
             sql = "CREATE TABLE towns (" +
-                        "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                        "name varchar(50), " +
-                        "country varchar(50)" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                    "name varchar(50), " +
+                    "country varchar(50)" +
                     ")";
             stmt.execute(sql);
             sql = "CREATE TABLE minions " +
                     "(" +
-                        "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                        "name varchar(50), " +
-                        "age int, " +
-                        "town_id int, " +
-                        "CONSTRAINT fk_Towns " +
-                        "FOREIGN KEY (town_id) REFERENCES towns(id)" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                    "name varchar(50), " +
+                    "age int, " +
+                    "town_id int, " +
+                    "CONSTRAINT fk_Towns " +
+                    "FOREIGN KEY (town_id) REFERENCES towns(id)" +
                     ")";
             stmt.execute(sql);
 
             sql = "CREATE TABLE villains " +
                     "(" +
-                        "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                        "name varchar(50), " +
-                        "evilness_factor varchar(20)" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                    "name varchar(50), " +
+                    "evilness_factor varchar(20)" +
                     ")";
             stmt.execute(sql);
             sql = "CREATE TABLE minions_villains" +
                     "(" +
-                        "minion_id INT, " +
-                        "villain_id INT, " +
-                        "CONSTRAINT fk_Minions " +
-                        "FOREIGN KEY (minion_id) REFERENCES Minions(id), " +
-                        "CONSTRAINT  fk_Villains " +
-                        "FOREIGN KEY (villain_id) REFERENCES villains(id)" +
+                    "minion_id INT, " +
+                    "villain_id INT, " +
+                    "CONSTRAINT fk_Minions " +
+                    "FOREIGN KEY (minion_id) REFERENCES Minions(id), " +
+                    "CONSTRAINT  fk_Villains " +
+                    "FOREIGN KEY (villain_id) REFERENCES villains(id)" +
                     ")";
             stmt.execute(sql);
 
@@ -103,21 +126,11 @@ public class P01_InitialSetup {
             //Clean-up environment
             stmt.close();
             conn.close();
-        }catch(SQLException se){
+        }catch(SQLException | ClassNotFoundException se){
             //Handle errors for JDBC
             se.printStackTrace();
-        }finally{
-            try{
-                if(stmt!=null)
-                    stmt.close();
-            }catch(SQLException se2){
-            }// nothing we can do
-            try{
-                if(conn!=null)
-                    conn.close();
-            }catch(SQLException se){
-                se.printStackTrace();
-            }
         }
+
     }
+
 }

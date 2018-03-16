@@ -29,8 +29,8 @@ public class P04_AddMinion {
         PreparedStatement addMinionToVillainStatement = null;
 
         Scanner sc = new Scanner(System.in);
-        try{
 
+        try{
             conn = ConnectionUtil.getConnection("minionsdb");
             conn.setAutoCommit(false);
 

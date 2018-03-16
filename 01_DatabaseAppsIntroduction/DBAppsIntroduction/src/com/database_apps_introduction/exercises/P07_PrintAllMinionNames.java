@@ -5,17 +5,15 @@ import java.sql.*;
 public class P07_PrintAllMinionNames {
 
 
+    public static final String MINION_NAMES = "SELECT name FROM minions";
+
     public static void main(String[] args) {
-        Connection conn = null;
 
-        try{
-
-            conn = ConnectionUtil.getConnection("minionsdb");
-
-            String minionNames = "SELECT name FROM minions";
-            PreparedStatement minionsStatement = conn
-                    .prepareStatement(minionNames, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
+        try(
+                Connection conn = ConnectionUtil.getConnection("minionsdb");
+                PreparedStatement minionsStatement = conn
+                        .prepareStatement(MINION_NAMES, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                ){
             ResultSet minions = minionsStatement.executeQuery();
             int minionsCount = 0;
             while(minions.next()){
@@ -40,15 +38,9 @@ public class P07_PrintAllMinionNames {
                 minions.next();
             }
 
-        }catch(SQLException se){
+        }catch(SQLException | ClassNotFoundException se){
             se.printStackTrace();
 
-        }finally{
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
