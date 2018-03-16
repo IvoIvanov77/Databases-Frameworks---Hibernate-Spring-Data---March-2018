@@ -19,7 +19,8 @@ public class P06_RemoveVillain {
             Scanner sc = new Scanner(System.in);
             int id = sc.nextInt();
 
-            String villainNameSQL = "SELECT name FROM villains WHERE id = "+id;
+            String villainNameSQL = "SELECT name FROM villains WHERE id = "  +id;
+
             String deleteVillainSQL = "DELETE FROM villains where id = "+id;
             String countMinionsSQL = "SELECT COUNT(minion_id) AS c FROM villains v\n" +
                     "JOIN minions_villains mv ON v.id = mv.villain_id\n" +

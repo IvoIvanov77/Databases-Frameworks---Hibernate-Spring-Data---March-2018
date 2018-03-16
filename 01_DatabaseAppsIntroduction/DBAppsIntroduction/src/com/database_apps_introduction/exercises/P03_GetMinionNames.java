@@ -5,31 +5,26 @@ import java.util.Scanner;
 
 public class P03_GetMinionNames {
 
+    public static final String SELECT_VILLIAN_NAME_BY_ID = "SELECT name\n" +
+            "FROM villains\n" +
+            "WHERE id = ?";
+    public static final String SELECT_MINIONS_BY_VILLIAN = "SELECT m.name, m.age\n" +
+            "FROM minions AS m\n" +
+            "INNER JOIN minions_villains AS mv ON mv.minion_id = m.id\n" +
+            "WHERE mv.villain_id = ?";
+
     public static void main(String[] args) {
-        java.sql.Connection conn = null;
-        PreparedStatement villainStatement = null;
-        PreparedStatement minionsNamesStatement = null;
-        Scanner sc = new Scanner(System.in);
-        try{
-            //Register JDBC driver
-            Class.forName("com.mysql.jdbc.Driver");
 
-            //Open a connection
-            System.out.println("Connecting to database...");
-            conn = DriverManager.getConnection(ConnectionUtil.DB_URL + "minionsdb", ConnectionUtil.USER,
-                    ConnectionUtil.PASS);
 
-            //Execute a query`
-            System.out.println("Creating statement...");
 
-           villainStatement = conn.prepareStatement("SELECT name\n" +
-                   "FROM villains\n" +
-                   "WHERE id = ?");
+        try(
+                Connection conn = ConnectionUtil.getConnection("minionsdb");
+                PreparedStatement villainStatement = conn.prepareStatement(SELECT_VILLIAN_NAME_BY_ID);
+                PreparedStatement minionsNamesStatement = conn.prepareStatement(SELECT_MINIONS_BY_VILLIAN);
+                ){
 
-            minionsNamesStatement = conn.prepareStatement("SELECT m.name, m.age\n" +
-                    "FROM minions AS m\n" +
-                    "INNER JOIN minions_villains AS mv ON mv.minion_id = m.id\n" +
-                    "WHERE mv.villain_id = ?");
+
+            Scanner sc = new Scanner(System.in);
 
             String id = sc.nextLine();
             ResultSet rs;
@@ -61,22 +56,11 @@ public class P03_GetMinionNames {
             //Clean-up environment
             rs.close();
             minionsNamesStatement.close();
+            villainStatement.close();
             conn.close();
         } catch(Exception e){
             //Handle errors for Class.forName
             e.printStackTrace();
-        }finally{
-            try{
-                if(minionsNamesStatement!=null)
-                    minionsNamesStatement.close();
-            }catch(SQLException ignored){
-            }// nothing we can do
-            try{
-                if(conn!=null)
-                    conn.close();
-            }catch(SQLException se){
-                se.printStackTrace();
-            }
         }
     }
 }

@@ -13,6 +13,7 @@ class ConnectionUtil {
     //  Database credentials
     static final String USER = "root";
     static final String PASS = "";
+    public static final String DRIVER_NAME = "com.mysql.jdbc.Driver";
 
     static Connection getConnection(){
        return getConnection(null);
@@ -21,7 +22,7 @@ class ConnectionUtil {
 
     static Connection getConnection(String dbName){
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName(DRIVER_NAME);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

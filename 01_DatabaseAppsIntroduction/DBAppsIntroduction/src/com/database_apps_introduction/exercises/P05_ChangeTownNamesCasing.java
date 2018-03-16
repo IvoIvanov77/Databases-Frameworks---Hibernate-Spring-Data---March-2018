@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class P05_ChangeTownNamesCasing {
 
+    public static final String SELECT_TOWNS_BY_COUNTRY = "SELECT id, name FROM towns WHERE country = ?";
+
     public static void main(String[] args) {
         Connection conn = null;
 
@@ -18,9 +20,8 @@ public class P05_ChangeTownNamesCasing {
 
             String countryName = sc.nextLine();
 
-            String townsFromCountrySQL = "SELECT id, name FROM towns WHERE country = ?";
             PreparedStatement townsFromCountryStatement = conn
-                    .prepareStatement(townsFromCountrySQL, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                    .prepareStatement(SELECT_TOWNS_BY_COUNTRY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             townsFromCountryStatement.setString(1, countryName);
             ResultSet towns = townsFromCountryStatement.executeQuery();
             if(!towns.isBeforeFirst()){

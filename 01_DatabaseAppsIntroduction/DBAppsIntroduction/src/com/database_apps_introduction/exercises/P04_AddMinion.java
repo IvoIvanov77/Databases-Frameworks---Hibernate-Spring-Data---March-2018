@@ -39,8 +39,7 @@ public class P04_AddMinion {
 
             String[] minionsInput = sc.nextLine().split("\\s+");
             String[] villainInput = sc.nextLine().split("\\s+");
-//            Minion: Bob 14 Berlin
-//            Villain: Gru
+
             String minionName = minionsInput[1];
             int minionAge = Integer.parseInt(minionsInput[2]);
             String townName = minionsInput[3];
