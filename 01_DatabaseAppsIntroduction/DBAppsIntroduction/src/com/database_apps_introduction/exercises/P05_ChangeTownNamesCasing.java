@@ -17,8 +17,10 @@ public class P05_ChangeTownNamesCasing {
 
         try(
                 Connection conn = ConnectionUtil.getConnection("minionsdb");
-                PreparedStatement townsFromCountryStatement = conn
-                        .prepareStatement(SELECT_TOWNS_BY_COUNTRY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                PreparedStatement townsFromCountryStatement =
+                        conn.prepareStatement(SELECT_TOWNS_BY_COUNTRY,
+                                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                ResultSet.CONCUR_UPDATABLE);
                 ){
 
             townsFromCountryStatement.setString(1, countryName);

@@ -50,8 +50,6 @@ public class P09_IncreaseAgeStoredProcedure {
         // then creates a new stored procedure
         statement.execute(queryCreate);
 
-        statement.close();
-
         System.out.println("Stored procedure created successfully!");
     }
 }

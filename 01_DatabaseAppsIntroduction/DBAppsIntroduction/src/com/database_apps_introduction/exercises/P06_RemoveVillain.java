@@ -8,62 +8,71 @@ import java.util.Scanner;
 
 public class P06_RemoveVillain {
 
+    private static final String VILLAIN_NAME_BY_ID = "SELECT name FROM villains WHERE id = %d";
+    private static final String DELETE_VILLAIN_BY_ID = "DELETE FROM villains where id = %d";
+    private static final String MINION_COUNT_BY_VILLAIN = "SELECT COUNT(minion_id) AS minions_count FROM villains v\n" +
+            "JOIN minions_villains mv ON v.id = mv.villain_id\n" +
+            "WHERE v.id = %d";
+    private static final String DELETE_MINIONS_BY_VILLAIN = "DELETE FROM minions_villains WHERE villain_id = %d";
+    private static final String NO_SUCH_VILLAIN_MESSAGE = "No such villain was found";
+
     public static void main(String[] args) {
-        Connection conn = null;
 
-        try{
+        Scanner sc = new Scanner(System.in);
+        int id = sc.nextInt();
 
-            conn = ConnectionUtil.getConnection("minionsdb");
+        try(Connection conn = ConnectionUtil.getConnection("minionsdb");){
 
             conn.setAutoCommit(false);
-            Scanner sc = new Scanner(System.in);
-            int id = sc.nextInt();
 
-            String villainNameSQL = "SELECT name FROM villains WHERE id = "  +id;
+            try(Statement statement = conn.createStatement();) {
 
-            String deleteVillainSQL = "DELETE FROM villains where id = "+id;
-            String countMinionsSQL = "SELECT COUNT(minion_id) AS c FROM villains v\n" +
-                    "JOIN minions_villains mv ON v.id = mv.villain_id\n" +
-                    "WHERE v.id = "+id;
-            String releaseMinionsSQL = "DELETE FROM minions_villains WHERE villain_id = "+id;
+                String villainName = getVillainName(statement, id);
 
-            Statement statement = conn.createStatement();
-            ResultSet villain = statement.executeQuery(villainNameSQL);
-            if(!villain.isBeforeFirst()){
-                System.out.println("No such villain was found");
-                return;
-            }
-            villain.first();
-            String villainName = villain.getString("name");
-            int minionsFound = 0;
-            ResultSet minionsForVillain = statement.executeQuery(countMinionsSQL);
-            if(minionsForVillain.isBeforeFirst()){
-                minionsForVillain.first();
-                minionsFound = minionsForVillain.getInt("c");
-            }
+                int minionsFound = getMinionsFound(id, statement);
 
-            statement.executeUpdate(releaseMinionsSQL);
+                statement.executeUpdate(String.format(DELETE_MINIONS_BY_VILLAIN, id));
+                statement.executeUpdate(String.format(DELETE_VILLAIN_BY_ID, id));
 
+                System.out.println(villainName+" was deleted");
+                System.out.println(minionsFound +" minions released");
 
-            statement.executeUpdate(deleteVillainSQL);
-            System.out.println(villainName+" was deleted");
-
-            System.out.println(minionsFound +" minions released");
-
-        } catch(Exception e){
-            try {
-                conn.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        }finally{
-            try {
                 conn.commit();
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+            }catch (SQLException ex){
+                conn.rollback();
+                ex.printStackTrace();
+            }finally {
+                conn.setAutoCommit(true);
             }
+
+        } catch(SQLException | ClassNotFoundException ex){
+            ex.printStackTrace();
         }
     }
+
+    private static int getMinionsFound(int id, Statement statement) throws SQLException {
+        int minionsFound = 0;
+        try(ResultSet minionsForVillain = statement.executeQuery(String.format(MINION_COUNT_BY_VILLAIN, id))) {
+            if(minionsForVillain.isBeforeFirst()){
+                minionsForVillain.first();
+                //columnLabel = alias or columnName
+                minionsFound = minionsForVillain.getInt("minions_count");
+            }
+        }
+        return minionsFound;
+    }
+
+    private static String getVillainName(Statement statement, int id) throws SQLException {
+        try(ResultSet villain = statement.executeQuery(String.format(VILLAIN_NAME_BY_ID, id))) {
+            if(!villain.isBeforeFirst()){
+                return NO_SUCH_VILLAIN_MESSAGE;
+            }
+            villain.first();
+            return villain.getString("name");
+        }
+    }
+
+
+
 }

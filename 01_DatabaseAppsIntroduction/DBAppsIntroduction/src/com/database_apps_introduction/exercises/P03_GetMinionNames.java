@@ -50,14 +50,7 @@ public class P03_GetMinionNames {
             }
             while(rs.next());
 
-
-            //Clean-up environment
-            rs.close();
-            minionsNamesStatement.close();
-            villainStatement.close();
-            conn.close();
-        } catch(Exception e){
-            //Handle errors for Class.forName
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

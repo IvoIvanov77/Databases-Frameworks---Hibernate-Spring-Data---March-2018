@@ -30,20 +30,20 @@ public class P04_AddMinion {
 
         Scanner sc = new Scanner(System.in);
 
+        String[] minionsInput = sc.nextLine().split("\\s+");
+        String[] villainInput = sc.nextLine().split("\\s+");
+
+        String minionName = minionsInput[1];
+        int minionAge = Integer.parseInt(minionsInput[2]);
+        String townName = minionsInput[3];
+        String villainName = villainInput[1];
+
         try{
             conn = ConnectionUtil.getConnection("minionsdb");
             conn.setAutoCommit(false);
 
             //Execute a query`
             System.out.println("Creating statement...");
-
-            String[] minionsInput = sc.nextLine().split("\\s+");
-            String[] villainInput = sc.nextLine().split("\\s+");
-
-            String minionName = minionsInput[1];
-            int minionAge = Integer.parseInt(minionsInput[2]);
-            String townName = minionsInput[3];
-            String villainName = villainInput[1];
 
             getTownIdStatement = conn.prepareStatement(GET_TOWN_ID);
             getTownIdStatement.setString(1, townName);

@@ -21,11 +21,6 @@ public class P02_GetVillainsNames {
             while(rs.next()){
                 System.out.println(rs.getString("name") + " " + rs.getString("minions_count"));
             }
-
-            //Clean-up environment
-            rs.close();
-            stmt.close();
-            conn.close();
         }catch(SQLException | ClassNotFoundException se){
             //Handle errors for JDBC
             se.printStackTrace();

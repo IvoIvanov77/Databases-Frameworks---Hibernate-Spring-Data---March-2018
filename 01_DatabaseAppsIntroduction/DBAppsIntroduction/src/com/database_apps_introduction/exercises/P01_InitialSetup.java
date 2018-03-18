@@ -24,8 +24,6 @@ public class P01_InitialSetup {
             stmt.execute(sql);
             sql = String.format("CREATE DATABASE %s", dbName);
             stmt.execute(sql);
-            stmt.close();
-            conn.close();
             System.out.println("Database created successfully");
         } catch (SQLException  | ClassNotFoundException e) {
             e.printStackTrace();
@@ -123,9 +121,6 @@ public class P01_InitialSetup {
                     "(3, 1)";
             stmt.execute(sql);
 
-            //Clean-up environment
-            stmt.close();
-            conn.close();
         }catch(SQLException | ClassNotFoundException se){
             //Handle errors for JDBC
             se.printStackTrace();
