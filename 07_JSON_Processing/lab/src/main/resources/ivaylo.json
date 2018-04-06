@@ -1,0 +1,14 @@
+{
+  "firstName": "Ivaylo",
+  "lastName": "Ivanov",
+  "address": {
+    "country": "Bulgaria",
+    "city": "Varna",
+    "street": "Preslav"
+  },
+  "phoneNumbers": [
+    {
+      "number": "33333333333"
+    }
+  ]
+}
